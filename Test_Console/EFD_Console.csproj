@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1AB88FCA-46BE-4416-BEA6-B0D926FDE83B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Test_Console</RootNamespace>
+    <AssemblyName>Test_Console</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Google.KML">
+      <HintPath>CBS\KML\Google.KML.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpKml">
+      <HintPath>CBS\KML\SharpKml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CBS\CBS_Main.cs" />
+    <Compile Include="CBS\FIX_TO_LATLNG.cs" />
+    <Compile Include="CBS\GeoCordSystem.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate_Output.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\Common.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\EFD.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\EFD_AOI_Entry.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\EFD_AOI_Exit.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\EFD_Trajectory.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\EFD_status.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\Main_Status.cs" />
+    <Compile Include="CBS\DATA OUTPUT\Generate\System_Status.cs" />
+    <Compile Include="CBS\EFD MESSAGE\EFD_File_Handler.cs" />
+    <Compile Include="CBS\EFD MESSAGE\EFD_Msg.cs" />
+    <Compile Include="CBS\File Watcher\FileWatcher.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\Angle.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\Ellipsoid.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GeodeticCalculator.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GeodeticCurve.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GeodeticMeasurement.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GlobalCoordinates.cs" />
+    <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GlobalPosition.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="CBS\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CBS\KML\Google.KML.dll" />
+    <None Include="CBS\KML\SharpKml.dll" />
+  </ItemGroup>
+</Project>
