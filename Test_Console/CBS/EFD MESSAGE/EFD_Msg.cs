@@ -23,14 +23,12 @@ namespace CBS
 				Basic,
 				Entry,
 				Exit
-			}
-			;
+			};
 
 			public string Name = "N/A";
 			private GeoCordSystemDegMinSecUtilities.LatLongClass Position;
 			public string Flight_Level = "N/A";
 			public Wpt_Type Type = Wpt_Type.Basic;
-
 		}
 
 		// These are calculated data
@@ -79,6 +77,97 @@ namespace CBS
             Reader.Close();
             Reader.Dispose();
 		}
+
+        public bool Is_New_Data_Set()
+        {
+            bool New_Data_Set = false;
+            string FileName = Get_Dir_By_ACID_AND_IFPLID(ACID, IFPLID);
+            char[] delimiterChars = { ' ' };
+            StreamReader MyStreamReader;
+            string Data_Set;
+            // Lets read in settings from the file
+            MyStreamReader = System.IO.File.OpenText(FileName);
+            while (MyStreamReader.Peek() >= 0)
+            {
+                Data_Set = MyStreamReader.ReadLine();
+                if (Data_Set[0] != '#')
+                {
+                    string[] words = Data_Set.Split(delimiterChars);
+
+                    switch (words[0])
+                    {
+                        case "ADEP":
+                            if (ADEP != words[1])
+                                New_Data_Set = true;
+                            break;
+                        case "ADES":
+                            if (ADES != words[1])
+                                New_Data_Set = true;
+                            break;
+                        case "EOBT":
+                            if (EOBT != words[1])
+                                New_Data_Set = true;
+                            break;
+                        case "EOBD":
+                            if (EOBD != words[1])
+                                New_Data_Set = true;
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            MyStreamReader.Close();
+            MyStreamReader.Dispose();
+
+            return New_Data_Set;
+        }
+
+        public void SaveDataSet()
+        {
+            string FileName = Get_Dir_By_ACID_AND_IFPLID(ACID, IFPLID);
+            string Settings_Data = "";
+
+            //////////////////////////////////////////////////////////////////////////////////////
+            // Do not chanage the order of calls
+            Settings_Data = "ADEP " + ADEP + Environment.NewLine;
+            Settings_Data = Settings_Data + "ADES " + ADES + Environment.NewLine;
+            Settings_Data = Settings_Data + "EOBT " + EOBT + Environment.NewLine;
+            Settings_Data = Settings_Data + "EOBD " + EOBD + Environment.NewLine;
+            //////////////////////////////////////////////////////////////////////////////////////
+
+            // create a writer and open the file
+            TextWriter tw = new StreamWriter(FileName);
+
+            try
+            {
+                // write a line of text to the file
+                tw.Write(Settings_Data);
+            }
+            catch
+            {
+            }
+
+            // close the stream
+            tw.Close();
+            tw.Dispose();
+        }
+
+        private static string Get_Dir_By_ACID_AND_IFPLID(string ACID, string IFPLID)
+        {
+            string DIR = "";
+            // First check if directory already exists
+            string IFPLID_DIR_NAME = ACID + "_" + IFPLID + "_*";
+            string[] DestDirectory = Directory.GetDirectories(CBS_Main.Get_Destination_Dir(), IFPLID_DIR_NAME);
+            if (DestDirectory.Length == 1)
+            {
+                DIR = DestDirectory[0];
+                DIR = Path.Combine(DIR, ".dataset");
+            }
+            return DIR;
+        }
 	}
 }
 
