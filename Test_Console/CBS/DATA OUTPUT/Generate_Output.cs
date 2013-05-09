@@ -20,9 +20,9 @@ namespace CBS
                 DestDirectory = Directory.GetDirectories(CBS_Main.Get_Destination_Dir(), IFPLID_DIR_NAME);
 
                 // Now create subdirectories within new directory
-                Directory.CreateDirectory(Path.Combine(DestDirectory[0], "Common"));
+                Directory.CreateDirectory(Path.Combine(DestDirectory[0], "common"));
                 Directory.CreateDirectory(Path.Combine(DestDirectory[0], "EFD"));
-                Directory.CreateDirectory(Path.Combine(DestDirectory[0], "Status"));
+                Directory.CreateDirectory(Path.Combine(DestDirectory[0], "status"));
             }
 
             Common.Generate_Output(Message_Data);

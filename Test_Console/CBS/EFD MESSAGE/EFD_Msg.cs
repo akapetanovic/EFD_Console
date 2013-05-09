@@ -13,6 +13,7 @@ namespace CBS
 		public string ADES;
 		public string EOBT;
 		public string EOBD;
+        public string FL_STATUS = "Unknown";
 		public string[] Waypoints;
 
 		public class Waypoint
@@ -45,7 +46,7 @@ namespace CBS
 			char[] delimiterChars = { ' ' };
 
 			// Parse the file and extract all data needed by
-			// CBS
+			// EFD
 			while (Reader.Peek() >= 0) 
 			{
 				OneLine = Reader.ReadLine ();

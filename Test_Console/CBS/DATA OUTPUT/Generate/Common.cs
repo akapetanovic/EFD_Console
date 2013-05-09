@@ -70,7 +70,7 @@ namespace CBS
             if (DestDirectory.Length == 1)
             {
                 DIR = DestDirectory[0];
-                DIR = Path.Combine(DIR, "Common");
+                DIR = Path.Combine(DIR, "common");
             }
 
             return DIR;
