@@ -18,6 +18,7 @@ namespace CBS
                     {
                         if (MyStreamReader != null)
                         {
+                            Thread.Sleep(100);
                             //// Pass in stream reader and initialise new
                             //// EFD message. 
                             EFD_Msg EDF_MESSAGE = new EFD_Msg(MyStreamReader);
