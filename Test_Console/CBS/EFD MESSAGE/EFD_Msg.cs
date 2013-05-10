@@ -3,80 +3,108 @@ using System.IO;
 
 namespace CBS
 {
-	public class EFD_Msg
-	{
-		// These are derived data from the
-		// EFD messages 
-		public string IFPLID;
-		public string ACID;
-		public string ADEP;
-		public string ADES;
-		public string EOBT;
-		public string EOBD;
+    public class EFD_Msg
+    {
+        // These are derived data from the
+        // EFD messages 
+        public string IFPLID;
+        public string ACID;
+        public string ADEP;
+        public string ADES;
+        public string EOBT;
+        public string EOBD;
         public string FL_STATUS = "Unknown";
-		public string[] Waypoints;
+        public string[] Waypoints;
 
-		public class Waypoint
-		{
-			public enum Wpt_Type
-			{
-				Basic,
-				Entry,
-				Exit
-			};
+        public class Waypoint
+        {
+            public enum Wpt_Type
+            {
+                Basic,
+                Entry,
+                Exit
+            };
 
-			public string Name = "N/A";
-			private GeoCordSystemDegMinSecUtilities.LatLongClass Position;
-			public string Flight_Level = "N/A";
-			public Wpt_Type Type = Wpt_Type.Basic;
-		}
+            public string Name = "N/A";
+            private GeoCordSystemDegMinSecUtilities.LatLongClass Position;
+            public string Flight_Level = "N/A";
+            public Wpt_Type Type = Wpt_Type.Basic;
+        }
 
-		// These are calculated data
-		private GeoCordSystemDegMinSecUtilities.LatLongClass  ENTRY_AOI_POINT;
-		private GeoCordSystemDegMinSecUtilities.LatLongClass  EXIT_AOI_POINT;
-		public DateTime ENTRY_AOI_TIME;
-		public DateTime EXIT_AOI_TIME;
-		public Waypoint[] TrajectoryPoints;
+        // These are calculated data
+        private GeoCordSystemDegMinSecUtilities.LatLongClass ENTRY_AOI_POINT;
+        private GeoCordSystemDegMinSecUtilities.LatLongClass EXIT_AOI_POINT;
+        public DateTime ENTRY_AOI_TIME;
+        public DateTime EXIT_AOI_TIME;
+        public string Entry_FL;
+        public string Exit_FL;
+        public Waypoint[] TrajectoryPoints;
 
-		public EFD_Msg (StreamReader Reader)
-		{
-			string OneLine;
-			char[] delimiterChars = { ' ' };
+        public EFD_Msg(StreamReader Reader)
+        {
+            string OneLine;
+            char[] delimiterChars = { ' ' };
 
-			// Parse the file and extract all data needed by
-			// EFD
-			while (Reader.Peek() >= 0) 
-			{
-				OneLine = Reader.ReadLine ();
-				string[] Words = OneLine.Split (delimiterChars);
+            // Parse the file and extract all data needed by
+            // EFD
+            while (Reader.Peek() >= 0)
+            {
+                OneLine = Reader.ReadLine();
+                string[] Words = OneLine.Split(delimiterChars);
 
-				switch (Words [0]) {
-				case "-IFPLID":
-					IFPLID = Words [1];
-					break;
-				case "-ARCID":
-					ACID = Words [1];
-					break;
-				case "-ADEP":
-					ADEP = Words [1];
-					break;
-				case "-ADES":
-					ADES = Words [1];
-					break;
-				case "-EOBT":
-					EOBT = Words [1];
-					break;
-				case "-EOBD":
-					EOBD = Words [1];
-					break;
-				default:
-					break;
-				}
-			}
+                try
+                {
+                    switch (Words[0])
+                    {
+                        case "-IFPLID":
+                            IFPLID = Words[1];
+                            break;
+                        case "-ARCID":
+                            ACID = Words[1];
+                            break;
+                        case "-ADEP":
+                            ADEP = Words[1];
+                            break;
+                        case "-ADES":
+                            ADES = Words[1];
+                            break;
+                        case "-EOBT":
+                            EOBT = Words[1];
+                            break;
+                        case "-EOBD":
+                            EOBD = Words[1];
+                            break;
+                        case "-BEGIN":
+                            string Test = Words[1];
+                            break;
+                        // Maastricht UAC Entry and Exit Times
+                        // -ASP -AIRSPDES EDYYAOI -ETI 130404091206 -XTI 130404095840
+                        case "":
+                            if (Words.Length == 8)
+                            {
+                                if (Words[1] == "-ASP")
+                                {
+                                    if ((Words[2] == "-AIRSPDES") && (Words[3] == "EDYYAOI"))
+                                    {
+                                        ENTRY_AOI_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[5]);
+                                        EXIT_AOI_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[7]);
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Error in EFD input file...");
+                }
+            }
 
             Reader.Close();
             Reader.Dispose();
-		}
+        }
 
         public bool Is_New_Data_Set()
         {
@@ -168,6 +196,6 @@ namespace CBS
             }
             return DIR;
         }
-	}
+    }
 }
 

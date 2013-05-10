@@ -53,10 +53,12 @@ namespace CBS
             XTemp.InnerText = Message_Data.IFPLID;
             XElemRoot.AppendChild(XTemp);
 
+            string TIME_AS_YYYYMMDDHHMMSS = CBS_Main.GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow);
+            
             string File_Path = Get_Dir_By_ACID_AND_IFPLID(Message_Data.ACID, Message_Data.IFPLID);
-            File_Path = Path.Combine(File_Path, ("Flight_Data_EFD_" + CBS_Main.GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow) + ".xml"));
+            File_Path = Path.Combine(File_Path, ("Flight_Data_EFD_" + TIME_AS_YYYYMMDDHHMMSS + ".xml"));
 
-            string Tmp = Path.Combine(CBS_Main.Get_Temp_Dir(), ("Flight_Data_EFD_" + CBS_Main.GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow) + ".xml"));
+            string Tmp = Path.Combine(CBS_Main.Get_Temp_Dir(), ("Flight_Data_EFD_" + TIME_AS_YYYYMMDDHHMMSS + ".xml"));
             XDoc.Save(Tmp);
             File.Move(Tmp, File_Path);
         }
