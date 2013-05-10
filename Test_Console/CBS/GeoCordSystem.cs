@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CBS
 {
-    class GeoCordSystemDegMinSecUtilities
+    public class GeoCordSystemDegMinSecUtilities
     {
         // Define the earth mean radius.
         const double EarthRadius = 6371.0;

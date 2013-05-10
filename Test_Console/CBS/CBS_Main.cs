@@ -8,7 +8,6 @@ namespace CBS
 {
     class CBS_Main
     {
-        private static bool FileWatcherEnabled = true;
         // WINDOWS
         //
         // Will get changed to LINUX paths on Initialise if APP is running
@@ -62,6 +61,11 @@ namespace CBS
         {
             Source_Path = SOURCE;
             flights_Path = DESTINATION;
+        }
+
+        public static string Get_Source_Data_Path()
+        {
+            return Source_Path;
         }
 
         // Returns power off time (+/- 59 sec)
@@ -252,9 +256,8 @@ namespace CBS
             Cold_Start_Timer.Elapsed += new ElapsedEventHandler(_HEART_BEAT_timer_Elapsed);
             Cold_Start_Timer.Enabled = true;
 
-            // Start file watcher to process incomming data
-            if (FileWatcherEnabled)
-                FileWatcher.CreateWatcher(Source_Path);
+            // Start input data monitor
+            EFD_File_Handler.Initialise();
 
             //////////////////////////////////////////////////////
             // Start periodic timer that will drive system status 
@@ -267,11 +270,7 @@ namespace CBS
 
         public static void Restart_Watcher()
         {
-            if (FileWatcherEnabled)
-            {
-                FileWatcher.StopWatcher();
-                FileWatcher.CreateWatcher(Source_Path);
-            }
+            
         }
 
         private static void _HEART_BEAT_timer_Elapsed(object sender, ElapsedEventArgs e)

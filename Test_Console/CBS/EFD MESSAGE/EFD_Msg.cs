@@ -5,8 +5,8 @@ namespace CBS
 {
     public class EFD_Msg
     {
-        // These are derived data from the
-        // EFD messages 
+        // These are derived 
+        // from the EFD messages 
         public string IFPLID;
         public string ACID;
         public string ADEP;
@@ -26,18 +26,18 @@ namespace CBS
             };
 
             public string Name = "N/A";
-            private GeoCordSystemDegMinSecUtilities.LatLongClass Position;
+            public GeoCordSystemDegMinSecUtilities.LatLongClass Position;
             public string Flight_Level = "N/A";
             public Wpt_Type Type = Wpt_Type.Basic;
         }
 
         // These are calculated data
-        private GeoCordSystemDegMinSecUtilities.LatLongClass ENTRY_AOI_POINT;
-        private GeoCordSystemDegMinSecUtilities.LatLongClass EXIT_AOI_POINT;
+        public  GeoCordSystemDegMinSecUtilities.LatLongClass ENTRY_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass();
+        public GeoCordSystemDegMinSecUtilities.LatLongClass EXIT_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass();
         public DateTime ENTRY_AOI_TIME;
         public DateTime EXIT_AOI_TIME;
-        public string Entry_FL;
-        public string Exit_FL;
+        public string Entry_FL = "N/A";
+        public string Exit_FL = "N/A";
         public Waypoint[] TrajectoryPoints;
 
         public EFD_Msg(StreamReader Reader)

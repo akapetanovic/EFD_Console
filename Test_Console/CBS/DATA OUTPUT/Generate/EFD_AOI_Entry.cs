@@ -50,6 +50,9 @@ namespace CBS
         {
             string TIME_AS_YYYYMMDDHHMMSS = CBS_Main.GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow);
             string Time_Stamp = KML_Common.Get_KML_Time_Stamp();
+            string Entry_LON, Entry_LAT;
+            Message_Data.ENTRY_AOI_POINT.GetDegMinSecStringFormat(out Entry_LAT, out Entry_LON);
+
             string KML_File_Content =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Environment.NewLine +
                     "<kml xmlns=\"http://www.opengis.net/kml/2.2\">" + Environment.NewLine +
@@ -73,15 +76,15 @@ namespace CBS
                         "</Data>" + Environment.NewLine +
                         
                         "<Data name=\"popupLine1\">" + Environment.NewLine +
-                            "<value>Time:{TIME}</value>" + Environment.NewLine +
+                            "<value>Time:" + Message_Data.ENTRY_AOI_TIME.ToShortDateString() + "/" + Message_Data.ENTRY_AOI_TIME.ToShortTimeString() + "</value>" + Environment.NewLine +
                         "</Data>" + Environment.NewLine +
-                        
+
                         "<Data name=\"popupLine2\">" + Environment.NewLine +
-                            "<value>Point:{LON,LAT}</value>" + Environment.NewLine +
+                        "<value>Point:" + Entry_LON + "'" + Entry_LAT + "</value>" + Environment.NewLine +
                         "</Data>" + Environment.NewLine +
                         
                         "<Data name=\"popupLine3\">" + Environment.NewLine +
-                            "<value>Altitude:{Altitude}</value>" + Environment.NewLine +
+                            "<value>Altitude:" + Message_Data.Entry_FL + "</value>" + Environment.NewLine +
                         "</Data>" + Environment.NewLine +
                         
                         "<Data name=\"fileLocation\">" + Environment.NewLine +

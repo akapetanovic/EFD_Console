@@ -51,7 +51,6 @@
     <Compile Include="CBS\DATA OUTPUT\Generate\System_Status.cs" />
     <Compile Include="CBS\EFD MESSAGE\EFD_File_Handler.cs" />
     <Compile Include="CBS\EFD MESSAGE\EFD_Msg.cs" />
-    <Compile Include="CBS\File Watcher\FileWatcher.cs" />
     <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\Angle.cs" />
     <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\Ellipsoid.cs" />
     <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GeodeticCalculator.cs" />
