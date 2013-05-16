@@ -214,6 +214,15 @@ namespace CBS
                             case "AIRAC_DATA_SOURCE":
                                 AIRAC_Data_Path = words[1];
                                 break;
+                            case "MYSQL_SERVER":
+                                MySqlWriter.MySQLConnetionString.server_name = words[1];
+                                break;
+                            case "MYSQL_USER":
+                                MySqlWriter.MySQLConnetionString.login_name = words[1];
+                                break;
+                            case "MYSQL_DATABASE":
+                                MySqlWriter.MySQLConnetionString.database = words[1];
+                                break;
                             default:
                                 break;
                         }
@@ -258,6 +267,9 @@ namespace CBS
 
             // Start input data monitor
             EFD_File_Handler.Initialise();
+
+            // Open up connection to the MySQL database
+            MySqlWriter.Initialise();
 
             //////////////////////////////////////////////////////
             // Start periodic timer that will drive system status 
@@ -329,6 +341,11 @@ namespace CBS
             Settings_Data = Settings_Data + "#" + Environment.NewLine;
             Settings_Data = Settings_Data + "# Destination of the AIRAC data" + Environment.NewLine;
             Settings_Data = Settings_Data + "AIRAC_DATA_SOURCE" + " " + AIRAC_Data_Path.ToString() + Environment.NewLine;
+            Settings_Data = Settings_Data + "#" + Environment.NewLine;
+            Settings_Data = Settings_Data + "# MY SQL CONNECTION STRING PARAMETERS" + Environment.NewLine;
+            Settings_Data = Settings_Data + "MYSQL_SERVER" + " " + MySqlWriter.MySQLConnetionString.server_name + Environment.NewLine;
+            Settings_Data = Settings_Data + "MYSQL_USER" + " " + MySqlWriter.MySQLConnetionString.login_name + Environment.NewLine;
+            Settings_Data = Settings_Data + "MYSQL_DATABASE" + " " + MySqlWriter.MySQLConnetionString.database + Environment.NewLine;
             //////////////////////////////////////////////////////////////////////////////////////
 
             // create a writer and open the file

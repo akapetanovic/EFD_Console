@@ -1,21 +1,24 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Test_Console/CBS/EFD MESSAGE/EFD_File_Handler.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Test_Console/CBS/FIX_TO_LATLNG.cs">
     <Files>
-      <File FileName="Test_Console/Main.cs" Line="11" Column="30" />
-      <File FileName="Test_Console/CBS/EFD MESSAGE/EFD_File_Handler.cs" Line="15" Column="3" />
+      <File FileName="Test_Console/Main.cs" Line="11" Column="27" />
+      <File FileName="Test_Console/CBS/EFD MESSAGE/EFD_File_Handler.cs" Line="49" Column="20" />
+      <File FileName="Test_Console/CBS/MySQL/MySqlWriter.cs" Line="68" Column="16" />
+      <File FileName="Test_Console/CBS/FIX_TO_LATLNG.cs" Line="48" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="EFD_Console" expanded="True">
+            <Node name="References" expanded="True" />
             <Node name="CBS" expanded="True">
-              <Node name="DATA OUTPUT" expanded="True">
-                <Node name="Generate" expanded="True" />
-              </Node>
               <Node name="EFD MESSAGE" expanded="True" />
+              <Node name="MySQL" expanded="True" />
+              <Node name="FIX_TO_LATLNG.cs" selected="True" />
             </Node>
           </Node>
+          <Node name="Packages" expanded="True" />
         </State>
       </Pad>
     </Pads>
@@ -26,4 +29,5 @@
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <AuthorInfo Name="Amer Kapetanovic" Email="akapetanovic@gmail.com" Copyright="Amer Kapetanovic" Company="" Trademark="" />
 </Properties>

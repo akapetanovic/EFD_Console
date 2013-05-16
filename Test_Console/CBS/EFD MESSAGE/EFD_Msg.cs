@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace CBS
 {
@@ -13,6 +14,8 @@ namespace CBS
         public string ADES;
         public string EOBT;
         public string EOBD;
+        public string ARCTYP;
+        public string FLTSTATE;
         public string FL_STATUS = "Unknown";
         public string[] Waypoints;
 
@@ -31,14 +34,22 @@ namespace CBS
             public Wpt_Type Type = Wpt_Type.Basic;
         }
 
+        public class Sector_Type
+        {
+            public string ID;
+            public DateTime SECTOR_ENTRY_TIME;
+            public DateTime SECTOR_EXIT_TIME;
+        }
+
         // These are calculated data
-        public  GeoCordSystemDegMinSecUtilities.LatLongClass ENTRY_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass();
+        public GeoCordSystemDegMinSecUtilities.LatLongClass ENTRY_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass();
         public GeoCordSystemDegMinSecUtilities.LatLongClass EXIT_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass();
         public DateTime ENTRY_AOI_TIME;
         public DateTime EXIT_AOI_TIME;
         public string Entry_FL = "N/A";
         public string Exit_FL = "N/A";
-        public Waypoint[] TrajectoryPoints;
+        public List<Waypoint> TrajectoryPoints = new List<Waypoint>();
+        public List<Sector_Type> Sector_List = new List<Sector_Type>();
 
         public EFD_Msg(StreamReader Reader)
         {
@@ -62,6 +73,12 @@ namespace CBS
                         case "-ARCID":
                             ACID = Words[1];
                             break;
+                        case "-FLTSTATE":
+                            FLTSTATE = Words[1];
+                            break;
+                        case "-ARCTYP":
+                            ARCTYP = Words[1];
+                            break;
                         case "-ADEP":
                             ADEP = Words[1];
                             break;
@@ -75,7 +92,18 @@ namespace CBS
                             EOBD = Words[1];
                             break;
                         case "-BEGIN":
-                            string Test = Words[1];
+                            if (Words[1] == "RTEPTS")
+                            {
+
+                            }
+                            else if (Words[1] == "ASPLIST")
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
                             break;
                         // Maastricht UAC Entry and Exit Times
                         // -ASP -AIRSPDES EDYYAOI -ETI 130404091206 -XTI 130404095840
@@ -84,10 +112,28 @@ namespace CBS
                             {
                                 if (Words[1] == "-ASP")
                                 {
+                                    // Always extract UAC Entry and Exit Times
                                     if ((Words[2] == "-AIRSPDES") && (Words[3] == "EDYYAOI"))
                                     {
                                         ENTRY_AOI_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[5]);
                                         EXIT_AOI_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[7]);
+                                    }
+
+                                    // Now extract all MUAC sectors and sector entry/exit times
+                                    // Always extract UAC Entry and Exit Times
+                                    if ((Words[2] == "-AIRSPDES") && (Words[3].Substring(0, 4) == "EDYY"))
+                                    {
+                                        string Sector_ID = Words[3].Substring(4, (Words[3].Length - 4));
+                                        // FOX,FOX1,FOX2,UAC,UACX,AOI
+                                        if (Sector_ID != "FOX" && Sector_ID != "FOX1" && Sector_ID != "FOX2" &&
+                                            Sector_ID != "UAC" && Sector_ID != "UACX" && Sector_ID != "AOI")
+                                        {
+                                            Sector_Type Sector = new Sector_Type();
+                                            Sector.ID = Sector_ID;
+                                            Sector.SECTOR_ENTRY_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[5]);
+                                            Sector.SECTOR_EXIT_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[7]);
+                                            Sector_List.Add(Sector);
+                                        }
                                     }
                                 }
                             }

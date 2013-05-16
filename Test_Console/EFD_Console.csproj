@@ -9,6 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Test_Console</RootNamespace>
     <AssemblyName>Test_Console</AssemblyName>
+    <ReleaseVersion>1.1</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +34,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="MySql.Data">
+      <HintPath>MySql.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -59,13 +63,16 @@
     <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GlobalCoordinates.cs" />
     <Compile Include="CBS\MIKE GAVANGHAN - GEODETIC\GlobalPosition.cs" />
     <Compile Include="CBS\DATA OUTPUT\Generate\KML_Common.cs" />
+    <Compile Include="CBS\MySQL\MySqlWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="CBS\" />
+    <Folder Include="CBS\MySQL\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CBS\KML\Google.KML.dll" />
     <None Include="CBS\KML\SharpKml.dll" />
+    <None Include="CBS\MySQL\MySql.Data.dll" />
   </ItemGroup>
 </Project>

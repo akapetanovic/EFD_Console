@@ -19,7 +19,7 @@ namespace CBS
             // Start periodic timer that will drive system status 
             // update logic
             // Now start heart beat timer.
-            System_Status_Timer = new System.Timers.Timer((100)); // Set up the timer for 1minute
+            System_Status_Timer = new System.Timers.Timer(100); // Set up the timer for 1minute
             System_Status_Timer.Elapsed += new ElapsedEventHandler(System_Status_Periodic_Update);
             System_Status_Timer.Enabled = true;
         }
@@ -32,8 +32,8 @@ namespace CBS
 
         public static void Handle_New_File()
         {
-            string[] filePaths = Directory.GetFiles(CBS_Main.Get_Source_Data_Path(), "*.log",
-                                         SearchOption.TopDirectoryOnly);
+            string[] filePaths = Directory.GetFiles(CBS_Main.Get_Source_Data_Path(), "*.log*",
+                                         SearchOption.AllDirectories);
 
             foreach (string Path in filePaths)
             {
@@ -45,7 +45,6 @@ namespace CBS
                         {
                             if (MyStreamReader != null)
                             {
-                                Thread.Sleep(100);
                                 //// Pass in stream reader and initialise new
                                 //// EFD message. 
                                 EFD_Msg EDF_MESSAGE = new EFD_Msg(MyStreamReader);
@@ -55,6 +54,9 @@ namespace CBS
 
                                 //// Generate output
                                 Generate_Output.Generate(EDF_MESSAGE);
+
+                                // Write data to the MySqlDatabase
+                                MySqlWriter.Write_One_Message(EDF_MESSAGE);
 
                                 // Let the status handler know that the
                                 // message has arrived...
