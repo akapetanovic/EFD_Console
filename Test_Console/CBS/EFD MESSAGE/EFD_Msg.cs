@@ -144,7 +144,7 @@ namespace CBS
                 }
                 catch
                 {
-                    Console.WriteLine("Error in EFD input file...");
+                    CBS_Main.WriteToLogFile("Exception in EFD_Msg.cs, Instantiation");
                 }
             }
 
@@ -157,40 +157,50 @@ namespace CBS
             bool New_Data_Set = false;
             string FileName = Get_Dir_By_ACID_AND_IFPLID(ACID, IFPLID);
             char[] delimiterChars = { ' ' };
-            StreamReader MyStreamReader;
+            StreamReader MyStreamReader = null;
             string Data_Set;
-            // Lets read in settings from the file
-            MyStreamReader = System.IO.File.OpenText(FileName);
-            while (MyStreamReader.Peek() >= 0)
+
+            try
             {
-                Data_Set = MyStreamReader.ReadLine();
-                if (Data_Set[0] != '#')
+                // Lets read in settings from the file
+                MyStreamReader = System.IO.File.OpenText(FileName);
+                while (MyStreamReader.Peek() >= 0)
                 {
-                    string[] words = Data_Set.Split(delimiterChars);
-
-                    switch (words[0])
+                    Data_Set = MyStreamReader.ReadLine();
+                    if (Data_Set[0] != '#')
                     {
-                        case "ADEP":
-                            if (ADEP != words[1])
-                                New_Data_Set = true;
-                            break;
-                        case "ADES":
-                            if (ADES != words[1])
-                                New_Data_Set = true;
-                            break;
-                        case "EOBT":
-                            if (EOBT != words[1])
-                                New_Data_Set = true;
-                            break;
-                        case "EOBD":
-                            if (EOBD != words[1])
-                                New_Data_Set = true;
-                            break;
+                        string[] words = Data_Set.Split(delimiterChars);
 
-                        default:
-                            break;
+                        switch (words[0])
+                        {
+                            case "ADEP":
+                                if (ADEP != words[1])
+                                    New_Data_Set = true;
+                                break;
+                            case "ADES":
+                                if (ADES != words[1])
+                                    New_Data_Set = true;
+                                break;
+                            case "EOBT":
+                                if (EOBT != words[1])
+                                    New_Data_Set = true;
+                                break;
+                            case "EOBD":
+                                if (EOBD != words[1])
+                                    New_Data_Set = true;
+                                break;
+
+                            default:
+                                break;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                CBS_Main.WriteToLogFile("Error in EFD Message " + e.Message);
+                MyStreamReader.Close();
+                MyStreamReader.Dispose();
             }
 
             MyStreamReader.Close();
@@ -222,6 +232,10 @@ namespace CBS
             }
             catch
             {
+                CBS_Main.WriteToLogFile("Exception in EFD_Msg.cs, Saving " + FileName);
+                // close the stream
+                tw.Close();
+                tw.Dispose();
             }
 
             // close the stream

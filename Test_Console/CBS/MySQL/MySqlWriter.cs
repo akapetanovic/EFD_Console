@@ -14,6 +14,7 @@ namespace CBS
             public static string login_name = "root";
             public static string server_name = "localhost";
             public static string database = "flights";
+            public static string table_name = "tms3";
         }
 
         public static void CloseConnection()
@@ -47,7 +48,7 @@ namespace CBS
             string LASTUPD = T_Now.Year.ToString("0000") + T_Now.Month.ToString("00") + T_Now.Day.ToString("00") +
                 T_Now.Hour.ToString("00") + T_Now.Minute.ToString("00") + T_Now.Second.ToString("00");
 
-            string query = "INSERT INTO " + "tms3" +
+            string query = "INSERT INTO " + MySQLConnetionString.table_name +
                 " (IFPLID, ARCID, FLTSTATE, ADEP, ADES, ARCTYP, ETI, XTI, LASTUPD, ENTRIES) " +
                 " VALUES ("  + Get_With_Quitation(Message.IFPLID) + "," +
                              Get_With_Quitation(Message.ACID) + "," +
@@ -61,7 +62,7 @@ namespace CBS
                              Get_With_Quitation(SEQMUAC) + ")";
 
             // First delete the data for the flight (if already exists)
-            string delete_query = "DELETE FROM " + "tms3" + " WHERE IFPLID= " + Get_With_Quitation(Message.IFPLID) + "AND ARCID= " + Get_With_Quitation(Message.ACID);
+            string delete_query = "DELETE FROM " + MySQLConnetionString.table_name + " WHERE IFPLID= " + Get_With_Quitation(Message.IFPLID) + "AND ARCID= " + Get_With_Quitation(Message.ACID);
             //create command and assign the query and connection from the constructor
             MySqlCommand cmd = new MySqlCommand(delete_query, MySQLconn);
 
@@ -111,10 +112,11 @@ namespace CBS
             try
             {
                 MySQLconn.Open();
+                CBS_Main.WriteToLogFile("Opened up MySQL connection " + connString);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                CBS_Main.WriteToLogFile("My SQL Error: " + e.Message);
             }
         }
     }

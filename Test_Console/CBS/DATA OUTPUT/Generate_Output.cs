@@ -26,6 +26,7 @@ namespace CBS
                 Directory.CreateDirectory(Path.Combine(DestDirectory[0], "common"));
                 Directory.CreateDirectory(Path.Combine(DestDirectory[0], "EFD"));
                 Directory.CreateDirectory(Path.Combine(DestDirectory[0], "status"));
+                CBS_Main.WriteToLogFile("Generate Output: Creating dir structure for: " + IFPLID_DIR_NAME);
 
                 GenerateOutput(Message_Data);
                 Message_Data.SaveDataSet();

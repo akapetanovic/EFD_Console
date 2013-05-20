@@ -26,7 +26,6 @@ namespace CBS
             {
                 XmlDocument XDoc = new XmlDocument();
                
-
                 // Create root node.
                 XmlElement XElemRoot = XDoc.CreateElement("EFDStatus");
                 //Add the node to the document.

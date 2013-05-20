@@ -22,6 +22,8 @@ namespace CBS
             System_Status_Timer = new System.Timers.Timer(100); // Set up the timer for 1minute
             System_Status_Timer.Elapsed += new ElapsedEventHandler(System_Status_Periodic_Update);
             System_Status_Timer.Enabled = true;
+
+            CBS_Main.WriteToLogFile("Starting 100ms timer to check for incomming EFD messages");
         }
 
         // Periodically call System Status Handler
@@ -37,56 +39,74 @@ namespace CBS
 
             foreach (string Path in filePaths)
             {
-                while (true)
+                try
                 {
-                    try
+                    using (MyStreamReader = System.IO.File.OpenText(Path))
                     {
-                        using (MyStreamReader = System.IO.File.OpenText(Path))
+                        if (MyStreamReader != null)
                         {
-                            if (MyStreamReader != null)
+                            //// Pass in stream reader and initialise new
+                            //// EFD message. 
+                            EFD_Msg EDF_MESSAGE = new EFD_Msg(MyStreamReader);
+
+                            MyStreamReader.Close();
+                            MyStreamReader.Dispose();
+
+                            try
                             {
-                                //// Pass in stream reader and initialise new
-                                //// EFD message. 
-                                EFD_Msg EDF_MESSAGE = new EFD_Msg(MyStreamReader);
-
-                                MyStreamReader.Close();
-                                MyStreamReader.Dispose();
-
                                 //// Generate output
                                 Generate_Output.Generate(EDF_MESSAGE);
+                            }
+                            catch (Exception e1)
+                            {
+                                CBS_Main.WriteToLogFile("Error in Generate_Output.Generate " + e1.Message);
+                            }
 
+                            try
+                            {
                                 // Write data to the MySqlDatabase
                                 MySqlWriter.Write_One_Message(EDF_MESSAGE);
-
-                                // Let the status handler know that the
-                                // message has arrived...
-                                CBS_Main.Notify_EFD_Message_Recived();
-
-                                //// Once done with the file, 
-                                //// lets delete it as we do not
-                                //// needed it any more
-                                try
-                                {
-                                    System.IO.File.Delete(Path);
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("Error in EFD_File_Handle");
-                                }
-
-                                break;
                             }
+
+                            catch (Exception e2)
+                            {
+                                CBS_Main.WriteToLogFile("Error in MySqlWriter.Write_One_Message " + e2.Message);
+                            }
+
+                            // Let the status handler know that the
+                            // message has arrived...
+                            try
+                            {
+                                CBS_Main.Notify_EFD_Message_Recived();
+                            }
+                            catch (Exception e3)
+                            {
+                                CBS_Main.WriteToLogFile("Error in CBS_Main.Notify_EFD_Message_Recived " + e3.Message);
+                            }
+
+                            //// Once done with the file, 
+                            //// lets delete it as we do not
+                            //// needed it any more
+                            try
+                            {
+                                System.IO.File.Delete(Path);
+                            }
+                            catch
+                            {
+                                CBS_Main.WriteToLogFile("Error in EFD_File_Handler, can't delete file " + Path);
+                            }
+
+                            break;
                         }
+                    }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        string T = ex.Message;
-                    }
-                    Thread.Sleep(500);
                 }
+                catch (Exception ex)
+                {
+                    CBS_Main.WriteToLogFile("Exception EFD_Handler: " + ex.Message);
+                }
+                Thread.Sleep(500);
             }
-
         }
     }
 }

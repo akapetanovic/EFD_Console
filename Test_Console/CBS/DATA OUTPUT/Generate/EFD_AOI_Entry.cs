@@ -114,10 +114,11 @@ namespace CBS
             {
                 // write a line of text to the file
                 tw.Write(KML_File_Content);
+                CBS_Main.WriteToLogFile("Generating: " + File_Path);
             }
             catch
             {
-
+                CBS_Main.WriteToLogFile("Exception in EFD_AOI_Entry.cs, Saving " + File_Path);
             }
 
             // close the stream

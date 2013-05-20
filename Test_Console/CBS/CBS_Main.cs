@@ -8,6 +8,14 @@ namespace CBS
 {
     class CBS_Main
     {
+        /// <summary>
+        /// ///////////////////////////////////////////////////////////
+        /// These are debug variables.
+        /// 
+        /// </summary>
+        public static string debug_on = "TRUE";
+        private static string Debug_Log_File = GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow) + "_EDF_LOG.log";
+        
         // WINDOWS
         //
         // Will get changed to LINUX paths on Initialise if APP is running
@@ -134,6 +142,38 @@ namespace CBS
             return App_Settings_Path;
         }
 
+        // This method writes one line message to the Log file
+        // Log file is written in the following format
+        // <APP_START_DATE_TIME>_EFD_LOG.log
+        public static void WriteToLogFile(string Log_Message)
+        {
+            if (debug_on == "TRUE")
+            {
+                // Debug_Log_File
+                // App_Settings_Path
+                string FileName = Path.Combine(App_Settings_Path, Debug_Log_File);
+                using (StreamWriter w = File.AppendText(FileName))
+                {
+                    Log(Log_Message, w);
+                }
+            }
+        }
+
+        private static void Log(string logMessage, TextWriter w)
+        {
+            w.Write("\r\nLog Entry : ");
+            w.WriteLine("{0} {1}", DateTime.Now.ToLongTimeString(),
+                DateTime.Now.ToLongDateString());
+            w.WriteLine("  :");
+            w.WriteLine("  :{0}", logMessage);
+            w.WriteLine("-------------------------------");
+
+            w.Close();
+            w.Dispose();
+
+            Console.WriteLine(logMessage);
+        }
+
         public static void Initialize()
         {
             /////////////////////////////////////////////////////////////////
@@ -153,20 +193,41 @@ namespace CBS
 
             // Now make sure that proper directory structure 
             // is set up on the host machine
-            if (Directory.Exists(Source_Path) == false)
-                Directory.CreateDirectory(Source_Path);
-            if (Directory.Exists(flights_Path) == false)
-                Directory.CreateDirectory(flights_Path);
             if (Directory.Exists(App_Settings_Path) == false)
+            {
                 Directory.CreateDirectory(App_Settings_Path);
+                WriteToLogFile("Creating " + App_Settings_Path);
+            }
+            if (Directory.Exists(Source_Path) == false)
+            {
+                Directory.CreateDirectory(Source_Path);
+                WriteToLogFile("Creating " + Source_Path);
+            }
+            if (Directory.Exists(flights_Path) == false)
+            {
+                Directory.CreateDirectory(flights_Path);
+                WriteToLogFile("Creating " + flights_Path);
+            }
             if (Directory.Exists(System_Status_Path) == false)
+            {
                 Directory.CreateDirectory(System_Status_Path);
+                WriteToLogFile("Creating " + System_Status_Path);
+            }
             if (Directory.Exists(Main_Status_Path) == false)
+            {
                 Directory.CreateDirectory(Main_Status_Path);
+                WriteToLogFile("Creating " + Main_Status_Path);
+            }
             if (Directory.Exists(AIRAC_Data_Path) == false)
+            {
                 Directory.CreateDirectory(AIRAC_Data_Path);
+                WriteToLogFile("Creating " + AIRAC_Data_Path);
+            }
             if (Directory.Exists(Tmp_Directory) == false)
+            {
                 Directory.CreateDirectory(Tmp_Directory);
+                WriteToLogFile("Creating " + Tmp_Directory);
+            }
 
             // Check if cbs_config.txt exists, if so load settings
             // data saved from the previous session
@@ -176,6 +237,8 @@ namespace CBS
             StreamReader MyStreamReader;
             if (File.Exists(FileName))
             {
+                WriteToLogFile("Processing " + FileName);
+
                 // Lets read in settings from the file
                 MyStreamReader = System.IO.File.OpenText(FileName);
                 while (MyStreamReader.Peek() >= 0)
@@ -223,6 +286,12 @@ namespace CBS
                             case "MYSQL_DATABASE":
                                 MySqlWriter.MySQLConnetionString.database = words[1];
                                 break;
+                            case "MYSQL_TABLE":
+                                MySqlWriter.MySQLConnetionString.table_name = words[1];
+                                break;
+                            case "DEBUG":
+                                debug_on = words[1];
+                                break;
                             default:
                                 break;
                         }
@@ -240,7 +309,10 @@ namespace CBS
                 // Now check if the application has been down for more than
                 // 10 minutes. If so then clear the directory
                 if (AppDown > TenMin)
+                {
                     ClearSourceDirectory();
+                    WriteToLogFile("APP down for more then 10min, clearing " + Source_Path);
+                }
                 else
                 {
                     // Call routine to process all files that might have
@@ -258,6 +330,7 @@ namespace CBS
                 // Since we had no idea when the application was last powered off
                 // we assume it has been more than timuout parameter, sop lets delete all files
                 ClearSourceDirectory();
+                WriteToLogFile("APP down time unknown, clearing " + Source_Path);
             }
 
             // Now start heart beat timer.
@@ -278,6 +351,7 @@ namespace CBS
             System_Status_Timer = new System.Timers.Timer((System_Status_Update_Rate_Sec * 100)); // Set up the timer for 1minute
             System_Status_Timer.Elapsed += new ElapsedEventHandler(System_Status_Periodic_Update);
             System_Status_Timer.Enabled = true;
+            CBS_Main.WriteToLogFile("Started system status heart beat timer");
         }
 
         public static void Restart_Watcher()
@@ -309,6 +383,8 @@ namespace CBS
         {
             string FileName = Path.Combine(App_Settings_Path, "cbs_config.txt");
             string Settings_Data = "";
+
+            WriteToLogFile("Saving " + FileName);
 
             //////////////////////////////////////////////////////////////////////////////////////
             // Do not chanage the order of calls
@@ -346,6 +422,9 @@ namespace CBS
             Settings_Data = Settings_Data + "MYSQL_SERVER" + " " + MySqlWriter.MySQLConnetionString.server_name + Environment.NewLine;
             Settings_Data = Settings_Data + "MYSQL_USER" + " " + MySqlWriter.MySQLConnetionString.login_name + Environment.NewLine;
             Settings_Data = Settings_Data + "MYSQL_DATABASE" + " " + MySqlWriter.MySQLConnetionString.database + Environment.NewLine;
+            Settings_Data = Settings_Data + "MYSQL_TABLE" + " " + MySqlWriter.MySQLConnetionString.table_name + Environment.NewLine;
+            Settings_Data = Settings_Data + "# DEBUG MODE TRUE/FALSE" + Environment.NewLine;
+            Settings_Data = Settings_Data + "DEBUG" + " " + debug_on + Environment.NewLine;
             //////////////////////////////////////////////////////////////////////////////////////
 
             // create a writer and open the file
