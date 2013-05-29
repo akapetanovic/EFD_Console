@@ -10,7 +10,7 @@ namespace CBS
 
 			CBS.CBS_Main.Initialize();
 
-			Console.WriteLine("Starting EFD 1.2, to abort type stop");
+			Console.WriteLine("Starting EFD 1.3, to abort type stop");
 
 			while (Run) {
 

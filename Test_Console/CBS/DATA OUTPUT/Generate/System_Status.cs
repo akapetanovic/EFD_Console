@@ -60,7 +60,6 @@ namespace CBS
                 FileStream fs = File.Create(File_Path);
                 fs.Close();
                 fs.Dispose();
-
             }
 
             No_EFD_DATA_Flag_Last_Cycle = No_EFD_DATA_Flag;

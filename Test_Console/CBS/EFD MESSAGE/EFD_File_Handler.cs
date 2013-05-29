@@ -15,15 +15,12 @@ namespace CBS
 
         public static void Initialise()
         {
-            //////////////////////////////////////////////////////
-            // Start periodic timer that will drive system status 
-            // update logic
             // Now start heart beat timer.
-            System_Status_Timer = new System.Timers.Timer(100); // Set up the timer for 1minute
+            System_Status_Timer = new System.Timers.Timer(1000); // Set up the timer for 1sec
             System_Status_Timer.Elapsed += new ElapsedEventHandler(System_Status_Periodic_Update);
             System_Status_Timer.Enabled = true;
 
-            CBS_Main.WriteToLogFile("Starting 100ms timer to check for incomming EFD messages");
+            CBS_Main.WriteToLogFile("Starting 1sec timer to check for incomming EFD messages");
         }
 
         // Periodically call System Status Handler
@@ -99,13 +96,11 @@ namespace CBS
                             break;
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {
                     CBS_Main.WriteToLogFile("Exception EFD_Handler: " + ex.Message);
-                }
-                Thread.Sleep(500);
+                }      
             }
         }
     }

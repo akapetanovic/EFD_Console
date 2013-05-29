@@ -50,8 +50,9 @@ namespace CBS
         {
             string TIME_AS_YYYYMMDDHHMMSS = CBS_Main.GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow);
             string Time_Stamp = KML_Common.Get_KML_Time_Stamp();
-            string Exit_LON, Exit_LAT;
-            Message_Data.ENTRY_AOI_POINT.GetDegMinSecStringFormat(out Exit_LAT, out Exit_LON);
+            string Exit_LON_DEGMINSEC;
+            string Exit_LAT_DEGMINSEC;
+            Message_Data.EXIT_AOI_POINT.GetDegMinSecStringFormat(out Exit_LAT_DEGMINSEC, out Exit_LON_DEGMINSEC);
 
             string KML_File_Content =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Environment.NewLine +
@@ -74,15 +75,15 @@ namespace CBS
                         "</Data>" + Environment.NewLine +
 
                         "<Data name=\"popupLine1\">" + Environment.NewLine +
-                            "<value>Time:" + Message_Data.EXIT_AOI_TIME.ToShortDateString() + "/" + Message_Data.EXIT_AOI_TIME.ToShortTimeString() + "</value>" + Environment.NewLine +
+                            "<value>Time:" + Message_Data.AOI_EXIT_TIME.ToShortDateString() + "/" + Message_Data.AOI_EXIT_TIME.ToShortTimeString() + "</value>" + Environment.NewLine +
                         "</Data>" + Environment.NewLine +
 
                         "<Data name=\"popupLine2\">" + Environment.NewLine +
-                            "<value>Point:" + Exit_LON + "'" + Exit_LAT + "</value>" + Environment.NewLine +
+                            "<value>Point:" + Exit_LON_DEGMINSEC + "'" + Exit_LAT_DEGMINSEC + "</value>" + Environment.NewLine +
                         "</Data>" + Environment.NewLine +
 
                         "<Data name=\"popupLine3\">" + Environment.NewLine +
-                            "<value>Altitude:" + Message_Data.Exit_FL + "</value>" + Environment.NewLine +
+                            "<value>Altitude:" + Message_Data.AOI_EXIT_FL + "</value>" + Environment.NewLine +
                         "</Data>" + Environment.NewLine +
 
                         "<Data name=\"fileLocation\">" + Environment.NewLine +
@@ -91,7 +92,7 @@ namespace CBS
 
                         "</ExtendedData>" + Environment.NewLine +
                     "<Point>" + Environment.NewLine +
-                        "<coordinates>12.09607,51.41915,1201,20130305003900</coordinates>" + Environment.NewLine +
+                         "<coordinates>" + Message_Data.EXIT_AOI_POINT.GetLatLongDecimal().LongitudeDecimal.ToString() + "," + Message_Data.EXIT_AOI_POINT.GetLatLongDecimal().LatitudeDecimal.ToString() + "," + Message_Data.AOI_EXIT_FL + "," + Message_Data.AOI_EXIT_TIME_YYMMDDHHMMSS + "</coordinates>" + Environment.NewLine +
                     "</Point>" + Environment.NewLine +
 
                     "</Placemark>" + Environment.NewLine +

@@ -54,6 +54,18 @@ namespace CBS
         {
             string TIME_AS_YYYYMMDDHHMMSS = CBS_Main.GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime.UtcNow);
             string Time_Stamp = KML_Common.Get_KML_Time_Stamp();
+
+            // Here build the trajectory string
+            // "12.17152,51.41049,646,20130305003800" + Environment.NewLine +
+            // "12.09607,51.41915,1201,20130305003900" + Environment.NewLine +
+            string Trajectory_String = "";
+            foreach (EFD_Msg.Waypoint WPT in Message_Data.TrajectoryPoints)
+            {
+                Trajectory_String = Trajectory_String + string.Format("{0:0.00000}", WPT.Position.GetLatLongDecimal().LongitudeDecimal) + "," +
+                    string.Format("{0:0.00000}", WPT.Position.GetLatLongDecimal().LatitudeDecimal) + "," +
+                    WPT.Flight_Level + "," + WPT.ETO + Environment.NewLine;
+            }
+
             string KML_File_Content =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Environment.NewLine +
                     "<kml xmlns=\"http://www.opengis.net/kml/2.2\">" + Environment.NewLine +
@@ -88,8 +100,7 @@ namespace CBS
             "</ExtendedData>" + Environment.NewLine +
                  "<LineString>" + Environment.NewLine +
                         "<coordinates>" + Environment.NewLine +
-                        "12.17152,51.41049,646,20130305003800" + Environment.NewLine +
-                        "12.09607,51.41915,1201,20130305003900" + Environment.NewLine +
+                        Trajectory_String +
                     "</coordinates>" + Environment.NewLine +
                   "</LineString>" + Environment.NewLine +
               "</Placemark>" + Environment.NewLine +

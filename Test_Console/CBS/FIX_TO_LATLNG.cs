@@ -11,7 +11,7 @@ namespace CBS
         {
             public bool Is_Found = false;
             public string Name;
-            private GeoCordSystemDegMinSecUtilities.LatLongClass Position;
+            public GeoCordSystemDegMinSecUtilities.LatLongClass Position;
 
             public void SetPosition(double LAT, double LNG)
             {
@@ -26,12 +26,12 @@ namespace CBS
             string FileName = Path.Combine(CBS_Main.Get_AIRAC_Dir(), "fixpoints");
             char[] delimiterChars = { ';' };
             StreamReader MyStreamReader;
-            DateTime StartTime = DateTime.UtcNow;
+
             if (File.Exists(FileName))
             {
                 // Lets read in settings from the file
                 MyStreamReader = System.IO.File.OpenText(FileName);
-               
+
                 while (MyStreamReader.Peek() >= 0)
                 {
                     FIXPOINT_Data = MyStreamReader.ReadLine();
