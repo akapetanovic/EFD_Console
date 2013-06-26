@@ -1,8 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Test_Console/CBS/FIX_TO_LATLNG.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Test_Console/Main.cs">
     <Files>
-      <File FileName="Test_Console/Main.cs" Line="13" Column="39" />
+      <File FileName="Test_Console/Main.cs" Line="11" Column="6" />
       <File FileName="Test_Console/CBS/EFD MESSAGE/EFD_File_Handler.cs" Line="49" Column="20" />
       <File FileName="Test_Console/CBS/MySQL/MySqlWriter.cs" Line="68" Column="1" />
       <File FileName="Test_Console/CBS/FIX_TO_LATLNG.cs" Line="4" Column="19" />
@@ -14,10 +14,10 @@
           <Node name="EFD_Console" expanded="True">
             <Node name="References" expanded="True" />
             <Node name="CBS" expanded="True">
-              <Node name="DATA OUTPUT" selected="True" />
               <Node name="EFD MESSAGE" expanded="True" />
               <Node name="MySQL" expanded="True" />
             </Node>
+            <Node name="Main.cs" selected="True" />
           </Node>
           <Node name="Packages" expanded="True" />
         </State>

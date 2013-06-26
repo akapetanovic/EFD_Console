@@ -252,6 +252,10 @@ namespace CBS
                 }
             }
 
+            /////////////////////////////////////////////////////////////////////////
+            // DO NOT CHANGE THE ORDER OF THE FOLLOWING CALLS
+            /////////////////////////////////////////////////////////////////////////
+
             // Here parse the list and
             // 1. Remove all "-VEC points from the end of the list
             // 2. Determine Lon/Lat of each -VEC point
@@ -261,26 +265,206 @@ namespace CBS
             // calculate sector entry/exit levels based on the
             // extrapolation data calculated from the main trajectory
             // WPT list
-            CalculateSectorEntry_Exit_Times();
+            CalculateSectorEntry_Exit_Times(ref Sector_List);
 
             /////////////////////////////////
             // Now set AOI Entry/Exit Points
-            if (TrajectoryPoints.Count > 1)
-            {
-                ENTRY_AOI_POINT = TrajectoryPoints[0].Position;
-                AOI_ENTRY_FL = TrajectoryPoints[0].Flight_Level;
-                EXIT_AOI_POINT = TrajectoryPoints[TrajectoryPoints.Count - 1].Position;
-                AOI_EXIT_FL = TrajectoryPoints[TrajectoryPoints.Count - 1].Flight_Level;
-            }
+            CalculateAOI_Entry_Exit_Times();
 
             Reader.Close();
             Reader.Dispose();
+            ///////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////
+        }
+
+        // This method is to be called once TrajectoryPoints
+        // list has been populated and parsed so only known
+        // points are left in the list (The route has been extracted)
+        private void CalculateAOI_Entry_Exit_Times()
+        {
+
+            // First take care of the sector entry FL
+            int Start_Index = 0;
+            int End_Index = 0;
+            bool Start_End_WPT_Search_Status = false;
+
+            // FL
+            int Start_FL;
+            int End_FL;
+            int FL_DIFFERENCE;
+            TimeSpan Start_To_Sector;
+            TimeSpan Start_To_End;
+            double Time_Factor;
+            double Sector_Crossing_FL;
+
+            // select a reference elllipsoid
+            Ellipsoid reference = Ellipsoid.WGS84;
+            // instantiate the calculator
+            GeodeticCalculator geoCalc = new GeodeticCalculator();
+
+            // Get indexes of WPT before and after AOI ENTRY crossing crossing border
+            Get_Start_End_WPT_Index(AOI_ENTRY_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
+            if (Start_End_WPT_Search_Status == true)
+            {
+                // First take care of the FL
+                Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
+                End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
+                FL_DIFFERENCE = End_FL - Start_FL;
+
+                if (Start_Index != End_Index)
+                {
+
+                    Start_To_Sector = AOI_ENTRY_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                    Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                    Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
+                    Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
+                }
+                else
+                {
+                    Sector_Crossing_FL = Start_FL;
+                    Time_Factor = 0.0;
+                }
+                AOI_ENTRY_FL = Math.Round(Sector_Crossing_FL).ToString();
+
+                GlobalPosition Start_Pos = new GlobalPosition(new GlobalCoordinates(TrajectoryPoints[Start_Index].Position.GetLatLongDecimal().LatitudeDecimal, TrajectoryPoints[Start_Index].Position.GetLatLongDecimal().LongitudeDecimal));
+                GlobalPosition End_Pos = new GlobalPosition(new GlobalCoordinates(TrajectoryPoints[End_Index].Position.GetLatLongDecimal().LatitudeDecimal, TrajectoryPoints[End_Index].Position.GetLatLongDecimal().LongitudeDecimal));
+
+                // Get the distance and conver it to NM
+                double distance = geoCalc.CalculateGeodeticMeasurement(reference, Start_Pos, End_Pos).PointToPointDistance;
+                if (distance > 0)
+                {
+                    distance = (distance / 100.0) * (double)Time_Factor;
+                    distance = 0.00053996 * distance;
+
+                    ////////////////////////////////////////////////////////////
+
+                    // Calculate the azimuth between two known points
+                    Angle Azimuth = geoCalc.CalculateGeodeticMeasurement(reference, Start_Pos, End_Pos).Azimuth;
+
+                    // Calculate new position
+                    GeoCordSystemDegMinSecUtilities.LatLongClass New_Position =
+                    GeoCordSystemDegMinSecUtilities.CalculateNewPosition(new GeoCordSystemDegMinSecUtilities.LatLongClass(Start_Pos.Latitude.Degrees, Start_Pos.Longitude.Degrees), distance, Azimuth.Degrees);
+                    ENTRY_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass(New_Position.GetLatLongDecimal().LatitudeDecimal, New_Position.GetLatLongDecimal().LongitudeDecimal);
+                }
+                else
+                {
+                    ENTRY_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass(Start_Pos.Latitude.Radians, Start_Pos.Longitude.Radians);
+                }
+            }
+
+            // Get indexes of WPT before and after AOI EXIT crossing crossing border
+            Get_Start_End_WPT_Index(AOI_EXIT_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
+            if (Start_End_WPT_Search_Status == true)
+            {
+                // First take care of the FL
+                Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
+                End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
+                FL_DIFFERENCE = End_FL - Start_FL;
+
+                Start_To_Sector = AOI_EXIT_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
+                Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
+                AOI_EXIT_FL = Math.Round(Sector_Crossing_FL).ToString();
+
+                GlobalPosition Start_Pos = new GlobalPosition(new GlobalCoordinates(TrajectoryPoints[Start_Index].Position.GetLatLongDecimal().LatitudeDecimal, TrajectoryPoints[Start_Index].Position.GetLatLongDecimal().LongitudeDecimal));
+                GlobalPosition End_Pos = new GlobalPosition(new GlobalCoordinates(TrajectoryPoints[End_Index].Position.GetLatLongDecimal().LatitudeDecimal, TrajectoryPoints[End_Index].Position.GetLatLongDecimal().LongitudeDecimal));
+
+                // Get the distance and conver it to NM
+                double distance = geoCalc.CalculateGeodeticMeasurement(reference, Start_Pos, End_Pos).PointToPointDistance;
+                distance = (distance / 100.0) * (double)Time_Factor;
+                distance = 0.00053996 * distance;
+                ////////////////////////////////////////////////////////////
+
+                // Calculate the azimuth between two known points
+                Angle Azimuth = geoCalc.CalculateGeodeticMeasurement(reference, Start_Pos, End_Pos).Azimuth;
+
+                // Calculate new position
+                GeoCordSystemDegMinSecUtilities.LatLongClass New_Position =
+                GeoCordSystemDegMinSecUtilities.CalculateNewPosition(new GeoCordSystemDegMinSecUtilities.LatLongClass(Start_Pos.Latitude.Degrees, Start_Pos.Longitude.Degrees), distance, Azimuth.Degrees);
+                EXIT_AOI_POINT = new GeoCordSystemDegMinSecUtilities.LatLongClass(New_Position.GetLatLongDecimal().LatitudeDecimal, New_Position.GetLatLongDecimal().LongitudeDecimal);
+            }
         }
 
         // This method is to be called once Sector and Trajectory
         // lists are populated (upon comleting EFD message extraction)
-        public void CalculateSectorEntry_Exit_Times()
+        public void CalculateSectorEntry_Exit_Times(ref List<Sector> Sector_List)
         {
+            // Loop through the sector list and calculate
+            // entry/exit levels
+            for (int i = 0; i < Sector_List.Count; i++)
+            {
+                // First take care of the sector entry FL
+                int Start_Index = 0;
+                int End_Index = 0;
+                bool Start_End_WPT_Search_Status = false;
+
+                int Start_FL;
+                int End_FL;
+                int FL_DIFFERENCE;
+                TimeSpan Start_To_Sector;
+                TimeSpan Start_To_End;
+                double Time_Factor;
+                double Sector_Crossing_FL;
+
+                // Get indexes of WPT before and after sector crossing border
+                Get_Start_End_WPT_Index(Sector_List[i].SECTOR_ENTRY_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
+                if (Start_End_WPT_Search_Status == true)
+                {
+                    Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
+                    End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
+                    FL_DIFFERENCE = End_FL - Start_FL;
+
+                    Start_To_Sector = Sector_List[i].SECTOR_ENTRY_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                    Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                    Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
+                    Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
+                    Sector_List[i].EFL = Math.Round(Sector_Crossing_FL).ToString();
+                }
+
+                // Now calculate sector exit FL
+                // Get indexes of WPT before and after sector crossing border
+                Get_Start_End_WPT_Index(Sector_List[i].SECTOR_EXIT_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
+                if (Start_End_WPT_Search_Status == true)
+                {
+                    Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
+                    End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
+                    FL_DIFFERENCE = End_FL - Start_FL;
+
+                    Start_To_Sector = Sector_List[i].SECTOR_EXIT_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                    Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+                    Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
+                    Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
+                    Sector_List[i].XFL = Math.Round(Sector_Crossing_FL).ToString();
+                }
+            }
+        }
+
+        // This method returns the indexes of the two WPT points (before and after) given time.
+        // Intended use is to obtain points before and after expected sector crossing. The points
+        // have expected FL and times and based on that it is possible to calculate sector crossing FL
+        private void Get_Start_End_WPT_Index(DateTime TimeAtPoint, out int Start, out int End, out bool Succefull)
+        {
+            Start = 0;
+            End = 0;
+            Succefull = false;
+            for (int i = 0; i < TrajectoryPoints.Count; i++)
+            {
+                TimeSpan Time = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[i].ETO) - TimeAtPoint;
+                if (Time.TotalSeconds > 0)
+                {
+                    Start = i - 1;
+                    End = i;
+                    // Check for the special case when the first points in the
+                    // list is also sector entry point.
+                    if (Start < 0)
+                        Start = 0;
+
+                    Succefull = true;
+                    break;
+                }
+            }
+
 
         }
 

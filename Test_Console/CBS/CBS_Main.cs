@@ -150,11 +150,19 @@ namespace CBS
             if (debug_on == "TRUE")
             {
                 // Debug_Log_File
-                // App_Settings_Path
-                string FileName = Path.Combine(App_Settings_Path, Debug_Log_File);
-                using (StreamWriter w = File.AppendText(FileName))
+
+                try
                 {
-                    Log(Log_Message, w);
+                    // App_Settings_Path
+                    string FileName = Path.Combine(App_Settings_Path, Debug_Log_File);
+                    using (StreamWriter w = File.AppendText(FileName))
+                    {
+                        Log(Log_Message, w);
+                    }
+                }
+                catch (Exception e)
+                {
+                    CBS_Main.WriteToLogFile("Error in WriteToLogFile " + e.Message);
                 }
             }
         }

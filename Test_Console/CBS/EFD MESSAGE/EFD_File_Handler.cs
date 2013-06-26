@@ -26,7 +26,9 @@ namespace CBS
         // Periodically call System Status Handler
         private static void System_Status_Periodic_Update(object sender, ElapsedEventArgs e)
         {
+            System_Status_Timer.Enabled = false;
             Handle_New_File();
+            System_Status_Timer.Enabled = true;
         }
 
         public static void Handle_New_File()

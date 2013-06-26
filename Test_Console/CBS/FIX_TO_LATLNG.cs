@@ -34,6 +34,7 @@ namespace CBS
 
                 while (MyStreamReader.Peek() >= 0)
                 {
+                    
                     FIXPOINT_Data = MyStreamReader.ReadLine();
                     string[] words = FIXPOINT_Data.Split(delimiterChars);
 
