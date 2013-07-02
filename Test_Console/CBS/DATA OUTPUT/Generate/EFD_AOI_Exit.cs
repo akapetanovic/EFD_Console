@@ -92,9 +92,10 @@ namespace CBS
 
                         "</ExtendedData>" + Environment.NewLine +
                     "<Point>" + Environment.NewLine +
-                         "<coordinates>" + Message_Data.EXIT_AOI_POINT.GetLatLongDecimal().LongitudeDecimal.ToString() + "," + Message_Data.EXIT_AOI_POINT.GetLatLongDecimal().LatitudeDecimal.ToString() + "," + Message_Data.AOI_EXIT_FL + "," + Message_Data.AOI_EXIT_TIME_YYMMDDHHMMSS + "</coordinates>" + Environment.NewLine +
+                         "<coordinates>" +
+              string.Format("{0:0.0000}", Message_Data.EXIT_AOI_POINT.GetLatLongDecimal().LongitudeDecimal) + "," +
+              string.Format("{0:0.0000}", Message_Data.EXIT_AOI_POINT.GetLatLongDecimal().LatitudeDecimal) + "," + Message_Data.AOI_EXIT_FL + "," + Message_Data.AOI_EXIT_TIME_YYMMDDHHMMSS + "</coordinates>" + Environment.NewLine +
                     "</Point>" + Environment.NewLine +
-
                     "</Placemark>" + Environment.NewLine +
             "</Document>" + Environment.NewLine +
             "</kml>";

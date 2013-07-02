@@ -18,6 +18,8 @@ namespace CBS
         public string FLTSTATE;
         public string FL_STATUS = "Unknown";
         public string[] Waypoints;
+        public string TSTARTTIME;
+        public string TENDTIME;
 
         public class Waypoint
         {
@@ -28,15 +30,16 @@ namespace CBS
             public string ETO = "N/A";
         }
 
-        public class Sector
-        {
-            public string ID = "N/A";
-            public DateTime SECTOR_ENTRY_TIME = DateTime.Now;
-            public DateTime SECTOR_EXIT_TIME = DateTime.Now;
-            public string EFL = "N/A";
-            public string XFL = "N/A";
-        }
-        public List<Sector> Sector_List = new List<Sector>();
+        //public class Sector
+        //{
+        //    public string ID = "N/A";
+        //    public DateTime SECTOR_ENTRY_TIME = DateTime.Now;
+        //    public DateTime SECTOR_EXIT_TIME = DateTime.Now;
+        //    public string EFL = "N/A";
+        //    public string XFL = "N/A";
+        //}
+
+        //public List<Sector> Sector_List = new List<Sector>();
         public List<Waypoint> GEO_Artifical_List = new List<Waypoint>();
 
 
@@ -154,22 +157,22 @@ namespace CBS
                                     AOI_EXIT_TIME_YYMMDDHHMMSS = "20" + Words[7];
                                 }
 
-                                // Now extract all MUAC sectors and sector entry/exit times
-                                // Always extract UAC Entry and Exit Times
-                                if ((Words[2] == "-AIRSPDES") && (Words[3].Substring(0, 4) == "EDYY"))
-                                {
-                                    string Sector_ID = Words[3].Substring(4, (Words[3].Length - 4));
-                                    // FOX,FOX1,FOX2,UAC,UACX,AOI
-                                    if (Sector_ID != "FOX" && Sector_ID != "FOX1" && Sector_ID != "FOX2" &&
-                                        Sector_ID != "UAC" && Sector_ID != "UACX" && Sector_ID != "AOI")
-                                    {
-                                        Sector Sector = new Sector();
-                                        Sector.ID = Sector_ID;
-                                        Sector.SECTOR_ENTRY_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[5]);
-                                        Sector.SECTOR_EXIT_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[7]);
-                                        Sector_List.Add(Sector);
-                                    }
-                                }
+                                //// Now extract all MUAC sectors and sector entry/exit times
+                                //// Always extract UAC Entry and Exit Times
+                                //if ((Words[2] == "-AIRSPDES") && (Words[3].Substring(0, 4) == "EDYY"))
+                                //{
+                                //    string Sector_ID = Words[3].Substring(4, (Words[3].Length - 4));
+                                //    // FOX,FOX1,FOX2,UAC,UACX,AOI
+                                //    if (Sector_ID != "FOX" && Sector_ID != "FOX1" && Sector_ID != "FOX2" &&
+                                //        Sector_ID != "UAC" && Sector_ID != "UACX" && Sector_ID != "AOI")
+                                //    {
+                                //        Sector Sector = new Sector();
+                                //        Sector.ID = Sector_ID;
+                                //        Sector.SECTOR_ENTRY_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[5]);
+                                //        Sector.SECTOR_EXIT_TIME = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + Words[7]);
+                                //        Sector_List.Add(Sector);
+                                //    }
+                                //}
                             }
                             else if (Words.Length > 1)
                             {
@@ -265,7 +268,7 @@ namespace CBS
             // calculate sector entry/exit levels based on the
             // extrapolation data calculated from the main trajectory
             // WPT list
-            CalculateSectorEntry_Exit_Times(ref Sector_List);
+            // CalculateSectorEntry_Exit_Times(ref Sector_List);
 
             /////////////////////////////////
             // Now set AOI Entry/Exit Points
@@ -386,59 +389,59 @@ namespace CBS
             }
         }
 
-        // This method is to be called once Sector and Trajectory
-        // lists are populated (upon comleting EFD message extraction)
-        public void CalculateSectorEntry_Exit_Times(ref List<Sector> Sector_List)
-        {
-            // Loop through the sector list and calculate
-            // entry/exit levels
-            for (int i = 0; i < Sector_List.Count; i++)
-            {
-                // First take care of the sector entry FL
-                int Start_Index = 0;
-                int End_Index = 0;
-                bool Start_End_WPT_Search_Status = false;
+        //// This method is to be called once Sector and Trajectory
+        //// lists are populated (upon comleting EFD message extraction)
+        //public void CalculateSectorEntry_Exit_Times(ref List<Sector> Sector_List)
+        //{
+        //    // Loop through the sector list and calculate
+        //    // entry/exit levels
+        //    for (int i = 0; i < Sector_List.Count; i++)
+        //    {
+        //        // First take care of the sector entry FL
+        //        int Start_Index = 0;
+        //        int End_Index = 0;
+        //        bool Start_End_WPT_Search_Status = false;
 
-                int Start_FL;
-                int End_FL;
-                int FL_DIFFERENCE;
-                TimeSpan Start_To_Sector;
-                TimeSpan Start_To_End;
-                double Time_Factor;
-                double Sector_Crossing_FL;
+        //        int Start_FL;
+        //        int End_FL;
+        //        int FL_DIFFERENCE;
+        //        TimeSpan Start_To_Sector;
+        //        TimeSpan Start_To_End;
+        //        double Time_Factor;
+        //        double Sector_Crossing_FL;
 
-                // Get indexes of WPT before and after sector crossing border
-                Get_Start_End_WPT_Index(Sector_List[i].SECTOR_ENTRY_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
-                if (Start_End_WPT_Search_Status == true)
-                {
-                    Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
-                    End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
-                    FL_DIFFERENCE = End_FL - Start_FL;
+        //        // Get indexes of WPT before and after sector crossing border
+        //        Get_Start_End_WPT_Index(Sector_List[i].SECTOR_ENTRY_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
+        //        if (Start_End_WPT_Search_Status == true)
+        //        {
+        //            Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
+        //            End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
+        //            FL_DIFFERENCE = End_FL - Start_FL;
 
-                    Start_To_Sector = Sector_List[i].SECTOR_ENTRY_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
-                    Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
-                    Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
-                    Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
-                    Sector_List[i].EFL = Math.Round(Sector_Crossing_FL).ToString();
-                }
+        //            Start_To_Sector = Sector_List[i].SECTOR_ENTRY_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+        //            Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+        //            Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
+        //            Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
+        //            Sector_List[i].EFL = Math.Round(Sector_Crossing_FL).ToString();
+        //        }
 
-                // Now calculate sector exit FL
-                // Get indexes of WPT before and after sector crossing border
-                Get_Start_End_WPT_Index(Sector_List[i].SECTOR_EXIT_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
-                if (Start_End_WPT_Search_Status == true)
-                {
-                    Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
-                    End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
-                    FL_DIFFERENCE = End_FL - Start_FL;
+        //        // Now calculate sector exit FL
+        //        // Get indexes of WPT before and after sector crossing border
+        //        Get_Start_End_WPT_Index(Sector_List[i].SECTOR_EXIT_TIME, out Start_Index, out End_Index, out Start_End_WPT_Search_Status);
+        //        if (Start_End_WPT_Search_Status == true)
+        //        {
+        //            Start_FL = int.Parse(TrajectoryPoints[Start_Index].Flight_Level);
+        //            End_FL = int.Parse(TrajectoryPoints[End_Index].Flight_Level);
+        //            FL_DIFFERENCE = End_FL - Start_FL;
 
-                    Start_To_Sector = Sector_List[i].SECTOR_EXIT_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
-                    Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
-                    Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
-                    Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
-                    Sector_List[i].XFL = Math.Round(Sector_Crossing_FL).ToString();
-                }
-            }
-        }
+        //            Start_To_Sector = Sector_List[i].SECTOR_EXIT_TIME - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+        //            Start_To_End = CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[End_Index].ETO) - CBS_Main.GetDate_Time_From_YYYYMMDDHHMMSS("20" + TrajectoryPoints[Start_Index].ETO);
+        //            Time_Factor = Start_To_Sector.TotalSeconds / Start_To_End.TotalSeconds;
+        //            Sector_Crossing_FL = Start_FL + (FL_DIFFERENCE * Time_Factor);
+        //            Sector_List[i].XFL = Math.Round(Sector_Crossing_FL).ToString();
+        //        }
+        //    }
+        //}
 
         // This method returns the indexes of the two WPT points (before and after) given time.
         // Intended use is to obtain points before and after expected sector crossing. The points

@@ -61,8 +61,8 @@ namespace CBS
             string Trajectory_String = "";
             foreach (EFD_Msg.Waypoint WPT in Message_Data.TrajectoryPoints)
             {
-                Trajectory_String = Trajectory_String + string.Format("{0:0.00000}", WPT.Position.GetLatLongDecimal().LongitudeDecimal) + "," +
-                    string.Format("{0:0.00000}", WPT.Position.GetLatLongDecimal().LatitudeDecimal) + "," +
+                Trajectory_String = Trajectory_String + string.Format("{0:0.0000}", WPT.Position.GetLatLongDecimal().LongitudeDecimal) + "," +
+                    string.Format("{0:0.0000}", WPT.Position.GetLatLongDecimal().LatitudeDecimal) + "," +
                     WPT.Flight_Level + "," + WPT.ETO + Environment.NewLine;
             }
 

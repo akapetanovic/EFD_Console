@@ -93,6 +93,17 @@ namespace CBS
             return new DateTime(Year, Month, Day, Hour, Minute, Sec);
         }
 
+        public static DateTime GetDate_Time_From_YYMMDDHHMMSS(string DATETIME)
+        {
+            int Year = int.Parse("20" + DATETIME.Substring(0, 2));
+            int Month = int.Parse(DATETIME.Substring(2, 2));
+            int Day = int.Parse(DATETIME.Substring(4, 2));
+            int Hour = int.Parse(DATETIME.Substring(6, 2));
+            int Minute = int.Parse(DATETIME.Substring(8, 2));
+            int Sec = int.Parse(DATETIME.Substring(10, 2));
+            return new DateTime(Year, Month, Day, Hour, Minute, Sec);
+        }
+
         public static string GetDate_Time_AS_YYYYMMDDHHMMSS(DateTime Time_In)
         {
             return Time_In.Year.ToString("0000") + Time_In.Month.ToString("00") + Time_In.Day.ToString("00") + Time_In.Hour.ToString("00") + Time_In.Minute.ToString("00") + Time_In.Second.ToString("00");

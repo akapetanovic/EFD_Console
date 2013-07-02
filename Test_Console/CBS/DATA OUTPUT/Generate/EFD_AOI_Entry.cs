@@ -95,12 +95,14 @@ namespace CBS
                     
                         "</ExtendedData>" + Environment.NewLine +
                     "<Point>" + Environment.NewLine +
-                        "<coordinates>" + Message_Data.ENTRY_AOI_POINT.GetLatLongDecimal().LongitudeDecimal.ToString() + "," + Message_Data.ENTRY_AOI_POINT.GetLatLongDecimal().LatitudeDecimal.ToString() + "," + Message_Data.AOI_ENTRY_FL + "," + Message_Data.AOI_ENTRY_TIME_YYMMDDHHMMSS + "</coordinates>" + Environment.NewLine +
+                    "<coordinates>" + string.Format("{0:0.0000}", Message_Data.ENTRY_AOI_POINT.GetLatLongDecimal().LongitudeDecimal) + "," + string.Format("{0:0.0000}", Message_Data.ENTRY_AOI_POINT.GetLatLongDecimal().LatitudeDecimal) + "," + Message_Data.AOI_ENTRY_FL + "," + Message_Data.AOI_ENTRY_TIME_YYMMDDHHMMSS + "</coordinates>" + Environment.NewLine +
                     "</Point>" + Environment.NewLine +
                 
                     "</Placemark>" + Environment.NewLine +
             "</Document>" + Environment.NewLine +
             "</kml>";
+
+          
 
             // Get the final data path
             string File_Path = Get_Dir_By_ACID_AND_IFPLID(Message_Data.ACID, Message_Data.IFPLID);

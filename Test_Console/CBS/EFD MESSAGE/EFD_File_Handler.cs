@@ -16,7 +16,7 @@ namespace CBS
         public static void Initialise()
         {
             // Now start heart beat timer.
-            System_Status_Timer = new System.Timers.Timer(1000); // Set up the timer for 1sec
+            System_Status_Timer = new System.Timers.Timer(1); // Set up the timer for 1sec
             System_Status_Timer.Elapsed += new ElapsedEventHandler(System_Status_Periodic_Update);
             System_Status_Timer.Enabled = true;
 
